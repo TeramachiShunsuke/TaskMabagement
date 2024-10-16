@@ -1,7 +1,9 @@
 package com.example.taskmanagement.adapter.inbound.web.controller;
 
+import com.example.taskmanagement.adapter.inbound.web.dto.TaskRequest;
 import com.example.taskmanagement.domain.model.Task;
 import com.example.taskmanagement.domain.port.inbound.TaskUseCase;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,14 +20,15 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@RequestBody Task task) {
+    public ResponseEntity<Task> createTask(@Valid @RequestBody TaskRequest taskRequest) {
+        Task task = new Task(null,taskRequest.getTitle(),taskRequest.getDescription(), taskRequest.getStatus(), taskRequest.getAssignee(),taskRequest.isCompleted());
         Task createdTask = taskUseCase.createTask(task);
         return ResponseEntity.ok(createdTask);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task task) {
-        Task updatedTask = new Task(id, task.getTitle(), task.getDescription(),task.getStatus(),task.getAssignee(), task.isCompleted());
+    public ResponseEntity<Task> updateTask(@PathVariable Long id,@Valid @RequestBody TaskRequest taskRequest) {
+        Task updatedTask = new Task(id, taskRequest.getTitle(), taskRequest.getDescription(),taskRequest.getStatus(),taskRequest.getAssignee(), taskRequest.isCompleted());
         Task result = taskUseCase.updateTask(updatedTask);
         return ResponseEntity.ok(result);
     }
